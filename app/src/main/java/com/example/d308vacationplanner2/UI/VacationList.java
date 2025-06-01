@@ -12,12 +12,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.d308vacationplanner2.R;
 import com.example.d308vacationplanner2.database.Repository;
 import com.example.d308vacationplanner2.entities.Excursion;
 import com.example.d308vacationplanner2.entities.Vacation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
 
 public class VacationList extends AppCompatActivity {
     private Repository repository;
@@ -34,8 +38,15 @@ public class VacationList extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        RecyclerView recyclerview=findViewById(R.id.recyclerview);
+        repository=new Repository(getApplication());
+        List<Vacation> allVacations=repository.getmAllVacations();
+        final VacationAdapter vacationAdapter=new VacationAdapter(this);
+        recyclerview.setAdapter(vacationAdapter);
+        recyclerview.setLayoutManager(new LinearLayoutManager(this));
+        vacationAdapter.setVacation(allVacations);
 
-        System.out.println(getIntent().getStringExtra("test"));
+        //System.out.println(getIntent().getStringExtra("test"));
     }
 
     @Override
@@ -67,5 +78,19 @@ public class VacationList extends AppCompatActivity {
             return true;
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        List<Vacation> allProducts = repository.getmAllVacations();
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        final VacationAdapter vacationAdapter = new VacationAdapter(this);
+        recyclerView.setAdapter(vacationAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        vacationAdapter.setVacation(allProducts);
+
+        //Toast.makeText(ProductDetails.this,"refresh list",Toast.LENGTH_LONG).show();
     }
 }
