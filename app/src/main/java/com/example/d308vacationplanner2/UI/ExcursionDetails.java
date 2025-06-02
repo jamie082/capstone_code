@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -22,6 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.d308vacationplanner2.R;
 import com.example.d308vacationplanner2.database.Repository;
+import com.example.d308vacationplanner2.entities.Excursion;
 import com.example.d308vacationplanner2.entities.Vacation;
 
 import java.text.ParseException;
@@ -74,14 +76,13 @@ public class ExcursionDetails extends AppCompatActivity {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-        ArrayList<Vacation> productArrayList = new ArrayList<>();
-        productArrayList.addAll(repository.getmAllVacations());
+     /*
         ArrayList<Integer> productIdList = new ArrayList<>();
         for (Vacation product : productArrayList) {
             productIdList.add(product.getVacationID());
         }
         ArrayAdapter<Integer> productIdAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_item, productIdList);
-
+*/
         startDate = new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -94,6 +95,13 @@ public class ExcursionDetails extends AppCompatActivity {
                 updateLabelStart();
             }
         };
+        Spinner spinner = findViewById(R.id.spinner);
+        ArrayList<Vacation> productArrayList=new ArrayList<>();
+        productArrayList.addAll(repository.getmAllVacations());
+        ArrayAdapter<Vacation>productAdapter=new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, productArrayList);
+        spinner.setAdapter(productAdapter);
+        spinner.setSelection(0);
+
 
         editDate.setOnClickListener(new View.OnClickListener() {
 
@@ -128,7 +136,41 @@ public class ExcursionDetails extends AppCompatActivity {
         return true;
     }
 
+
+
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
+        }
+
+        if (item.getItemId() == R.id.partsave) {
+            Excursion part;
+            if (partID == -1) {
+                if (repository.getAllParts().size() == 0)
+                    partID = 1;
+                else
+                    partID = repository.getAllParts().get(repository.getAllParts().size() - 1).getExcursionID() + 1;
+                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID);
+                repository.insert(part);
+            } else {
+                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID);
+                repository.update(part);
+            }
+            return true;
+        }
+
+        if (item.getItemId() == R.id.share) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString() + "EXTRA_TEXT");
+            sendIntent.putExtra(Intent.EXTRA_TITLE, editNote.getText().toString() + "EXTRA_TITLE");
+            sendIntent.setType("text/plain");
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
+            return true;
+        }
         if (item.getItemId() == R.id.notify) {
             String dateFromScreen = editDate.getText().toString();
             String myFormat = "MM/dd/yy"; // In which you need to put here

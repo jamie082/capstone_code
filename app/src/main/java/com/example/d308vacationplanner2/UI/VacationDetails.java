@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,10 @@ public class VacationDetails extends AppCompatActivity {
     EditText editName;
     EditText editPrice;
     Repository repository;
+
+    Vacation currentVacation;
+
+    int numParts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,24 @@ public class VacationDetails extends AppCompatActivity {
                 vacation = new Vacation(productID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
                 repository.update(vacation);
                 this.finish();
+            }
+        }
+        if(item.getItemId()==R.id.productdelete) {
+            for(Vacation prod:repository.getmAllVacations()) {
+                if(prod.getVacationID()==productID)currentVacation=prod;
+            }
+            numParts=0;
+            for(Excursion part: repository.getAllParts()) {
+                if(part.getVacationID()==productID)++numParts;
+            }
+            if (numParts == 0) {
+                repository.delete(currentVacation);
+                Toast.makeText(VacationDetails.this, currentVacation.getVacationName() + " was deleted", Toast.LENGTH_LONG).show();
+                VacationDetails.this.finish();
+            }
+            else {
+                Toast.makeText(VacationDetails.this, "Can't delete a product with parts", Toast.LENGTH_LONG).show();
+
             }
         }
         return true;
