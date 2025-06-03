@@ -71,7 +71,7 @@ public class ExcursionDetails extends AppCompatActivity {
         editPrice.setText(Double.toString(price));
         partID = getIntent().getIntExtra("id", -1);
         prodID = getIntent().getIntExtra("prodID", -1);
-        editNote = findViewById(R.id.note);
+        editNote = findViewById(R.id.partName);
         editDate = findViewById(R.id.date);
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
