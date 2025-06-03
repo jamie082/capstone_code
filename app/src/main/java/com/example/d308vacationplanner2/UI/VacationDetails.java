@@ -1,6 +1,9 @@
 package com.example.d308vacationplanner2.UI;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -40,12 +43,16 @@ public class VacationDetails extends AppCompatActivity {
     int productID;
     EditText editName;
     EditText editPrice;
+
+    EditText editNote;
     Repository repository;
 
     Vacation currentVacation;
 
     TextView editStartVacaDate;
     TextView editEndVacaDate;
+
+    TextView editDate;
 
     int numParts;
 
@@ -55,7 +62,6 @@ public class VacationDetails extends AppCompatActivity {
     final Calendar myCalendarEnd = Calendar.getInstance();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +69,8 @@ public class VacationDetails extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.floatingActionButton2);
         editName = findViewById(R.id.name);
         editPrice = findViewById(R.id.price);
+        editNote = findViewById(R.id.hoteltext);
+        editDate = findViewById(R.id.startvacationdate);
         editStartVacaDate = findViewById(R.id.startvacationdate);
         editEndVacaDate = findViewById(R.id.endvacationdate);
         productID = getIntent().getIntExtra("id", -1);
@@ -131,9 +139,9 @@ public class VacationDetails extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 Date date;
                 //get value from other screen,but I'm going to hard code it right now
-                String info=editStartVacaDate.getText().toString();
-                if(info.equals(""))info="02/10/24";
-                try{
+                String info = editStartVacaDate.getText().toString();
+                if (info.equals("")) info = "02/10/24";
+                try {
                     myCalendarStart.setTime(sdf.parse(info));
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -151,9 +159,9 @@ public class VacationDetails extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 Date date;
                 //get value from other screen,but I'm going to hard code it right now
-                String info=editEndVacaDate.getText().toString();
-                if(info.equals(""))info="02/10/24";
-                try{
+                String info = editEndVacaDate.getText().toString();
+                if (info.equals("")) info = "02/10/24";
+                try {
                     myCalendarEnd.setTime(sdf.parse(info));
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -168,12 +176,14 @@ public class VacationDetails extends AppCompatActivity {
             }
         });
     }
+
     private void updateLabelStart() {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         editStartVacaDate.setText(sdf.format(myCalendarStart.getTime()));
     }
+
     private void updateLabelEnd() {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
@@ -187,7 +197,7 @@ public class VacationDetails extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.productsave) {
+        if (item.getItemId() == R.id.partsave) {
             Vacation vacation;
             if (productID == -1) {
                 if (repository.getmAllVacations().size() == 0) productID = 1;
@@ -202,6 +212,38 @@ public class VacationDetails extends AppCompatActivity {
                 this.finish();
             }
         }
+        if (item.getItemId() == R.id.share) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString() + "EXTRA_TEXT");
+            sendIntent.putExtra(Intent.EXTRA_TITLE, editNote.getText().toString() + "EXTRA_TITLE");
+            sendIntent.setType("text/plain");
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
+            return true;
+        }
+        if (item.getItemId() == R.id.notify) {
+            String dateFromScreen = editDate.getText().toString();
+            String myFormat = "MM/dd/yy"; // In which you need to put here
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            Date myDate = null;
+            try {
+                myDate = sdf.parse(dateFromScreen);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Long trigger = myDate.getTime();
+            Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
+            intent.putExtra("key","message I want to see");
+            PendingIntent sender=PendingIntent.getBroadcast(VacationDetails.this,++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, trigger,sender);
+            return true;
+        }
+        return true;
+    }
+}
+/*
         if (item.getItemId() == R.id.productdelete) {
             for (Vacation prod : repository.getmAllVacations()) {
                 if (prod.getVacationID() == productID) currentVacation = prod;
@@ -222,3 +264,4 @@ public class VacationDetails extends AppCompatActivity {
         return true;
     }
 }
+ */

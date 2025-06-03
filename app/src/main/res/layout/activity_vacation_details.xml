@@ -56,6 +56,25 @@
                     android:hint="product 1" />
 
             </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:text="hotel: "></TextView>
+
+                <EditText
+                    android:id="@+id/hoteltext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:hint="hotel name"></EditText>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

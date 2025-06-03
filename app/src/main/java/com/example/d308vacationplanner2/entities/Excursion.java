@@ -50,3 +50,4 @@ public class Excursion {
         this.vacationID = vacationID;
     }
 }
+
