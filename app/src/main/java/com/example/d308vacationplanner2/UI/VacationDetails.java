@@ -212,10 +212,29 @@ public class VacationDetails extends AppCompatActivity {
                 this.finish();
             }
         }
+        List<Excursion> filteredExcursions = new ArrayList<>();
+        for (Excursion p : repository.getAllParts()) {
+            if(p.getVacationID() == productID) filteredExcursions.add(p);
+        }
+        StringBuilder excursionDetails = new StringBuilder();
+        for (Excursion p : filteredExcursions) {
+            excursionDetails.append("Excursion Name: ")
+                    .append(p.getExcursionName())
+                    .append(", Price: $")
+                    .append(p.getPrice())
+                    .append("\n");
+        }
         if (item.getItemId() == R.id.share) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString() + "EXTRA_TEXT");
+            //sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString() + "EXTRA_TEXT");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "These are the vacation details: vacationID: " + currentVacation + ", the name of our vacation: " + editName.getText().toString() + ", price: $" +
+                    Double.parseDouble(editPrice.getText().toString()) + ", the hotel name: " +
+                    editNote.getText().toString() + ", this is our start date: " +
+                    editStartVacaDate.getText().toString() + ", this is our end date: " +
+                    editEndVacaDate.getText().toString() + ", associated excursions: " + excursionDetails
+                    + " Let us know what you think!");
+
             sendIntent.putExtra(Intent.EXTRA_TITLE, editNote.getText().toString() + "EXTRA_TITLE");
             sendIntent.setType("text/plain");
             Intent shareIntent = Intent.createChooser(sendIntent, null);
