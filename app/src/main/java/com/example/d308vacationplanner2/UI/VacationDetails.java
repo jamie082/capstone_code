@@ -14,11 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,23 +40,16 @@ public class VacationDetails extends AppCompatActivity {
     EditText editName;
     EditText editPrice;
 
-    EditText editNote;
     Repository repository;
-
     Vacation currentVacation;
-
     TextView editStartVacaDate;
     TextView editEndVacaDate;
-
     TextView editDate;
-
     int numParts;
-
     DatePickerDialog.OnDateSetListener startVacaDate;
     DatePickerDialog.OnDateSetListener endVacaDate;
     final Calendar myCalendarStart = Calendar.getInstance();
     final Calendar myCalendarEnd = Calendar.getInstance();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +58,6 @@ public class VacationDetails extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.floatingActionButton2);
         editName = findViewById(R.id.name);
         editPrice = findViewById(R.id.price);
-        editNote = findViewById(R.id.hoteltext);
         editDate = findViewById(R.id.startvacationdate);
         editStartVacaDate = findViewById(R.id.startvacationdate);
         editEndVacaDate = findViewById(R.id.endvacationdate);
@@ -78,8 +66,23 @@ public class VacationDetails extends AppCompatActivity {
         price = getIntent().getDoubleExtra("price", 0.0);
         editName.setText(name);
         editPrice.setText(Double.toString(price));
-        String myFormat = "MM/dd/yy"; //In which you need put here
+        String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        // Load existing vacation details
+        if (productID != -1) {
+            repository = new Repository(getApplication());
+            List<Vacation> vacations = repository.getmAllVacations();
+            for (Vacation v : vacations) {
+                if (v.getVacationID() == productID) {
+                    currentVacation = v;
+                    editStartVacaDate.setText(v.getStartDate());
+                    editEndVacaDate.setText(v.getEndDate());
+                    break;
+                }
+            }
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +90,7 @@ public class VacationDetails extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         RecyclerView recyclerView = findViewById(R.id.partrecyclerview);
         repository = new Repository(getApplication());
         final ExcursionAdapter excursionAdapter = new ExcursionAdapter(this);
@@ -99,46 +103,28 @@ public class VacationDetails extends AppCompatActivity {
         excursionAdapter.setParts(filteredParts);
 
         startVacaDate = new DatePickerDialog.OnDateSetListener() {
-
             @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 myCalendarStart.set(Calendar.YEAR, year);
                 myCalendarStart.set(Calendar.MONTH, monthOfYear);
                 myCalendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-
                 updateLabelStart();
             }
-
         };
 
         endVacaDate = new DatePickerDialog.OnDateSetListener() {
-
             @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 myCalendarEnd.set(Calendar.YEAR, year);
                 myCalendarEnd.set(Calendar.MONTH, monthOfYear);
                 myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-
                 updateLabelEnd();
             }
-
         };
 
         editStartVacaDate.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Date date;
-                //get value from other screen,but I'm going to hard code it right now
                 String info = editStartVacaDate.getText().toString();
                 if (info.equals("")) info = "02/10/24";
                 try {
@@ -153,12 +139,8 @@ public class VacationDetails extends AppCompatActivity {
         });
 
         editEndVacaDate.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Date date;
-                //get value from other screen,but I'm going to hard code it right now
                 String info = editEndVacaDate.getText().toString();
                 if (info.equals("")) info = "02/10/24";
                 try {
@@ -169,25 +151,21 @@ public class VacationDetails extends AppCompatActivity {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(VacationDetails.this, endVacaDate, myCalendarStart
                         .get(Calendar.YEAR), myCalendarStart.get(Calendar.MONTH),
                         myCalendarStart.get(Calendar.DAY_OF_MONTH));
-
                 datePickerDialog.getDatePicker().setMinDate(myCalendarStart.getTimeInMillis());
-
                 datePickerDialog.show();
             }
         });
     }
 
     private void updateLabelStart() {
-        String myFormat = "MM/dd/yy"; //In which you need put here
+        String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
         editStartVacaDate.setText(sdf.format(myCalendarStart.getTime()));
     }
 
     private void updateLabelEnd() {
-        String myFormat = "MM/dd/yy"; //In which you need put here
+        String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
         editEndVacaDate.setText(sdf.format(myCalendarEnd.getTime()));
     }
 
@@ -198,20 +176,48 @@ public class VacationDetails extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.partsave) {
-            Vacation vacation;
-            if (productID == -1) {
-                if (repository.getmAllVacations().size() == 0) productID = 1;
-                else
-                    productID = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
-                vacation = new Vacation(productID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
-                repository.insert(vacation);
-                this.finish();
-            } else {
-                vacation = new Vacation(productID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()));
-                repository.update(vacation);
-                this.finish();
+            String myFormat = "MM/dd/yy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            String startDateString = sdf.format(myCalendarStart.getTime());
+            String endDateString = sdf.format(myCalendarEnd.getTime());
+            try {
+                Date startDate = sdf.parse(startDateString);
+                Date endDate = sdf.parse(endDateString);
+                if (endDate.before(startDate)) {
+                    Toast.makeText(this, "End date must be AFTER start date", Toast.LENGTH_LONG).show();
+                } else {
+                    Vacation vacation;
+
+                    if (productID == -1) {
+                        if (repository.getmAllVacations().size() == 0) productID = 1;
+                        else productID = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
+
+                        // ADD HOTEL NOTE TO CONSTRUCTOR
+                        vacation = new Vacation(productID, editName.getText().toString(),
+                                Double.parseDouble(editPrice.getText().toString()),
+                                startDateString,
+                                endDateString);
+
+                        repository.insert(vacation);
+                        currentVacation = vacation;
+                        this.finish();
+                    } else {
+                        // ADD HOTEL NOTE TO CONSTRUCTOR
+                        vacation = new Vacation(productID, editName.getText().toString(),
+                                Double.parseDouble(editPrice.getText().toString()),
+                                startDateString,
+                                endDateString);
+
+                        repository.update(vacation);
+                        currentVacation = vacation;
+                        this.finish();
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         }
+
         List<Excursion> filteredExcursions = new ArrayList<>();
         for (Excursion p : repository.getAllParts()) {
             if(p.getVacationID() == productID) filteredExcursions.add(p);
@@ -224,26 +230,26 @@ public class VacationDetails extends AppCompatActivity {
                     .append(p.getPrice())
                     .append("\n");
         }
+
         if (item.getItemId() == R.id.share) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            //sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString() + "EXTRA_TEXT");
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "These are the vacation details: vacationID: " + currentVacation + ", the name of our vacation: " + editName.getText().toString() + ", price: $" +
-                    Double.parseDouble(editPrice.getText().toString()) + ", the hotel name: " +
-                    editNote.getText().toString() + ", this is our start date: " +
-                    editStartVacaDate.getText().toString() + ", this is our end date: " +
-                    editEndVacaDate.getText().toString() + ", associated excursions: " + excursionDetails
-                    + " Let us know what you think!");
-
-            sendIntent.putExtra(Intent.EXTRA_TITLE, editNote.getText().toString() + "EXTRA_TITLE");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "These are the vacation details: vacationID: " +
+                    (currentVacation != null ? currentVacation.getVacationID() : "") +
+                    ", the name of our vacation: " + editName.getText().toString() +
+                    ", price: $" + Double.parseDouble(editPrice.getText().toString()) +
+                    ", this is our start date: " + editStartVacaDate.getText().toString() +
+                    ", this is our end date: " + editEndVacaDate.getText().toString() +
+                    ", associated excursions: " + excursionDetails + " Let us know what you think!");
             sendIntent.setType("text/plain");
             Intent shareIntent = Intent.createChooser(sendIntent, null);
             startActivity(shareIntent);
             return true;
         }
+
         if (item.getItemId() == R.id.notify) {
             String dateFromScreen = editDate.getText().toString();
-            String myFormat = "MM/dd/yy"; // In which you need to put here
+            String myFormat = "MM/dd/yy";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
             Date myDate = null;
             try {
@@ -251,36 +257,16 @@ public class VacationDetails extends AppCompatActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Long trigger = myDate.getTime();
-            Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
-            intent.putExtra("key","message I want to see");
-            PendingIntent sender=PendingIntent.getBroadcast(VacationDetails.this,++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, trigger,sender);
+            if (myDate != null) {
+                Long trigger = myDate.getTime();
+                Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
+                intent.putExtra("key","message I want to see");
+                PendingIntent sender = PendingIntent.getBroadcast(VacationDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+            }
             return true;
         }
         return true;
     }
 }
-/*
-        if (item.getItemId() == R.id.productdelete) {
-            for (Vacation prod : repository.getmAllVacations()) {
-                if (prod.getVacationID() == productID) currentVacation = prod;
-            }
-            numParts = 0;
-            for (Excursion part : repository.getAllParts()) {
-                if (part.getVacationID() == productID) ++numParts;
-            }
-            if (numParts == 0) {
-                repository.delete(currentVacation);
-                Toast.makeText(VacationDetails.this, currentVacation.getVacationName() + " was deleted", Toast.LENGTH_LONG).show();
-                VacationDetails.this.finish();
-            } else {
-                Toast.makeText(VacationDetails.this, "Can't delete a product with parts", Toast.LENGTH_LONG).show();
-
-            }
-        }
-        return true;
-    }
-}
- */
