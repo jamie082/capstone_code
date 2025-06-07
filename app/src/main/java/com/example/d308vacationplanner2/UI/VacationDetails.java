@@ -35,16 +35,21 @@ import java.util.Locale;
 public class VacationDetails extends AppCompatActivity {
 
     String name;
+
+    String hotel;
     double price;
     int productID;
     EditText editName;
     EditText editPrice;
+
+    EditText editHotel;
 
     Repository repository;
     Vacation currentVacation;
     TextView editStartVacaDate;
     TextView editEndVacaDate;
     TextView editDate;
+
     int numParts;
     DatePickerDialog.OnDateSetListener startVacaDate;
     DatePickerDialog.OnDateSetListener endVacaDate;
@@ -58,13 +63,16 @@ public class VacationDetails extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.floatingActionButton2);
         editName = findViewById(R.id.name);
         editPrice = findViewById(R.id.price);
+        editHotel = findViewById(R.id.hotelz);
         editDate = findViewById(R.id.startvacationdate);
         editStartVacaDate = findViewById(R.id.startvacationdate);
         editEndVacaDate = findViewById(R.id.endvacationdate);
         productID = getIntent().getIntExtra("id", -1);
         name = getIntent().getStringExtra("name");
+        hotel = getIntent().getStringExtra("hotel");
         price = getIntent().getDoubleExtra("price", 0.0);
         editName.setText(name);
+        editHotel.setText(hotel);
         editPrice.setText(Double.toString(price));
         String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
@@ -195,8 +203,10 @@ public class VacationDetails extends AppCompatActivity {
                         // ADD HOTEL NOTE TO CONSTRUCTOR
                         vacation = new Vacation(productID, editName.getText().toString(),
                                 Double.parseDouble(editPrice.getText().toString()),
+                                editHotel.getText().toString(),
                                 startDateString,
                                 endDateString);
+
 
                         repository.insert(vacation);
                         currentVacation = vacation;
@@ -205,6 +215,7 @@ public class VacationDetails extends AppCompatActivity {
                         // ADD HOTEL NOTE TO CONSTRUCTOR
                         vacation = new Vacation(productID, editName.getText().toString(),
                                 Double.parseDouble(editPrice.getText().toString()),
+                                editHotel.getText().toString(),
                                 startDateString,
                                 endDateString);
 

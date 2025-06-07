@@ -60,9 +60,9 @@ public class VacationList extends AppCompatActivity {
         if(item.getItemId()==R.id.mysample) {
             repository=new Repository(getApplication());
             //Toast.makeText(VacationList.this, "put in sample data", Toast.LENGTH_LONG).show();
-            Vacation vacation=new  Vacation(0, "bicycle", 100.0, "09/03/23", "09/06/23");
+            Vacation vacation=new  Vacation(0, "bicycle", 100.0, "09/03/23", "09/06/23", "Hello");
             repository.insert(vacation);
-            vacation = new Vacation(0, "tricycle", 100.0, "10/01/25", "10/07/25");
+            vacation = new Vacation(0, "tricycle", 100.0, "10/01/25", "10/07/25", "Hello");
             repository.insert(vacation);
             Excursion excursion=new Excursion(0, "wheel", 10, 1);
             repository.insert(excursion);
