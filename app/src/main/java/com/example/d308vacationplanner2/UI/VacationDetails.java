@@ -35,6 +35,7 @@ import java.util.Locale;
 public class VacationDetails extends AppCompatActivity {
 
     String name;
+    static int notificationID;
 
     String hotel;
     double price;
@@ -50,6 +51,9 @@ public class VacationDetails extends AppCompatActivity {
     TextView editEndVacaDate;
     TextView editDate;
 
+    String setStartDate;
+    String setEndDate;
+
     int numParts;
     DatePickerDialog.OnDateSetListener startVacaDate;
     DatePickerDialog.OnDateSetListener endVacaDate;
@@ -64,6 +68,8 @@ public class VacationDetails extends AppCompatActivity {
         editName = findViewById(R.id.name);
         editPrice = findViewById(R.id.price);
         editHotel = findViewById(R.id.hotelz);
+        setStartDate = getIntent().getStringExtra("startdate");
+        setEndDate = getIntent().getStringExtra("enddate");
         editDate = findViewById(R.id.startvacationdate);
         editStartVacaDate = findViewById(R.id.startvacationdate);
         editEndVacaDate = findViewById(R.id.endvacationdate);
@@ -109,6 +115,17 @@ public class VacationDetails extends AppCompatActivity {
             if (p.getVacationID() == productID) filteredParts.add(p);
         }
         excursionAdapter.setParts(filteredParts);
+
+        if (setStartDate != null) {
+            try {
+                Date startDate = sdf.parse(setStartDate);
+                Date endDate = sdf.parse(setEndDate);
+                myCalendarStart.setTime(startDate);
+                myCalendarEnd.setTime(endDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
         startVacaDate = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -182,6 +199,14 @@ public class VacationDetails extends AppCompatActivity {
         return true;
     }
 
+    private void scheduleAlarm(AlarmManager alarmManager, long triggerTime, String message, int notificationId) {
+        Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
+        intent.putExtra("key", message);
+        intent.putExtra("notification_id", notificationId);
+        PendingIntent sender = PendingIntent.getBroadcast(VacationDetails.this, notificationId, intent, PendingIntent.FLAG_IMMUTABLE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, sender);
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.partsave) {
             String myFormat = "MM/dd/yy";
@@ -198,7 +223,8 @@ public class VacationDetails extends AppCompatActivity {
 
                     if (productID == -1) {
                         if (repository.getmAllVacations().size() == 0) productID = 1;
-                        else productID = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
+                        else
+                            productID = repository.getmAllVacations().get(repository.getmAllVacations().size() - 1).getVacationID() + 1;
 
                         // ADD HOTEL NOTE TO CONSTRUCTOR
                         vacation = new Vacation(productID, editName.getText().toString(),
@@ -231,7 +257,7 @@ public class VacationDetails extends AppCompatActivity {
 
         List<Excursion> filteredExcursions = new ArrayList<>();
         for (Excursion p : repository.getAllParts()) {
-            if(p.getVacationID() == productID) filteredExcursions.add(p);
+            if (p.getVacationID() == productID) filteredExcursions.add(p);
         }
         StringBuilder excursionDetails = new StringBuilder();
         for (Excursion p : filteredExcursions) {
@@ -259,15 +285,40 @@ public class VacationDetails extends AppCompatActivity {
         }
 
         if (item.getItemId() == R.id.notify) {
+            String startdate = editStartVacaDate.getText().toString();
+            String enddate = editEndVacaDate.getText().toString();
             String dateFromScreen = editDate.getText().toString();
             String myFormat = "MM/dd/yy";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
             Date myDate = null;
+            Date myStartDate = null;
+            Date myEndDate = null;
             try {
                 myDate = sdf.parse(dateFromScreen);
+                myStartDate = sdf.parse(startdate);
+                myEndDate = sdf.parse(enddate);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            try {
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                // Schedule start date notification
+                scheduleAlarm(alarmManager, myStartDate.getTime(), "Vacation Start: " + name, notificationID++);
+
+                // Schedule end date notification
+                scheduleAlarm(alarmManager, myEndDate.getTime(), "Vacation End: " + name, notificationID++);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
+
+                //
+            /*
             if (myDate != null) {
                 Long trigger = myDate.getTime();
                 Intent intent = new Intent(VacationDetails.this, MyReceiver.class);
@@ -276,8 +327,10 @@ public class VacationDetails extends AppCompatActivity {
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
             }
+
             return true;
         }
         return true;
     }
 }
+*/

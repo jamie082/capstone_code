@@ -152,11 +152,13 @@ public class ExcursionDetails extends AppCompatActivity {
                     partID = 1;
                 else
                     partID = repository.getAllParts().get(repository.getAllParts().size() - 1).getExcursionID() + 1;
-                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID);
+                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID, editDate.getText().toString());
                 repository.insert(part);
+                this.finish();
             } else {
-                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID);
+                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID, editDate.getText().toString());
                 repository.update(part);
+                this.finish();
             }
             return true;
         }
@@ -181,12 +183,16 @@ public class ExcursionDetails extends AppCompatActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Long trigger = myDate.getTime();
-            Intent intent = new Intent(ExcursionDetails.this, MyReceiver.class);
-            intent.putExtra("key","message I want to see");
-            PendingIntent sender=PendingIntent.getBroadcast(ExcursionDetails.this,++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, trigger,sender);
+            try {
+                Long trigger = myDate.getTime();
+                Intent intent = new Intent(ExcursionDetails.this, MyReceiver.class);
+                intent.putExtra("key","message I want to see");
+                PendingIntent sender=PendingIntent.getBroadcast(ExcursionDetails.this,++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, trigger,sender); }
+            catch (Exception e) {
+
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

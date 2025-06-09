@@ -20,6 +20,8 @@ public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.Excu
     private List<Excursion> mExcursion;
     private final Context context;
     private final LayoutInflater mInflater;
+    private String startVacationDate;
+    private String endVacationDate;
 
     class ExcursionHolder extends RecyclerView.ViewHolder {
 
@@ -41,6 +43,8 @@ public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.Excu
                     intent.putExtra("name", current.getExcursionName());
                     intent.putExtra("price", current.getPrice());
                     intent.putExtra("prodID", current.getVacationID());
+                    intent.putExtra("startVacationDate", startVacationDate);
+                    intent.putExtra("endVacationDate", endVacationDate);
                     context.startActivity(intent);
                 }
             });

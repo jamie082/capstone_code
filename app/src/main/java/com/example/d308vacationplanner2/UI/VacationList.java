@@ -64,10 +64,12 @@ public class VacationList extends AppCompatActivity {
             repository.insert(vacation);
             vacation = new Vacation(0, "tricycle", 100.0, "10/01/25", "10/07/25", "Hello");
             repository.insert(vacation);
+            /*
             Excursion excursion=new Excursion(0, "wheel", 10, 1);
             repository.insert(excursion);
             excursion = new Excursion(0, "pedal", 10, 1);
             repository.insert(excursion);
+             */
             return true;
         }
 
