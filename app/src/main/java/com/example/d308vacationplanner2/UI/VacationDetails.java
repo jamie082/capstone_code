@@ -263,8 +263,11 @@ public class VacationDetails extends AppCompatActivity {
         for (Excursion p : filteredExcursions) {
             excursionDetails.append("Excursion Name: ")
                     .append(p.getExcursionName())
-                    .append(", Price: $")
-                    .append(p.getPrice())
+
+                   // .append(", Price: $")
+                    //.append(p.getPrice())
+
+
                     .append("\n");
         }
 

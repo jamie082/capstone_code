@@ -36,9 +36,12 @@ import java.util.Locale;
 public class ExcursionDetails extends AppCompatActivity {
 
     String name;
+
+    String excursionDate;
+
+    int vacationID;
     Double price;
-    int partID;
-    int prodID;
+    int excursionID;
     EditText editName;
     EditText editPrice;
     EditText editNote;
@@ -63,16 +66,14 @@ public class ExcursionDetails extends AppCompatActivity {
         });
          */
         repository = new Repository(getApplication());
+        editName = findViewById(R.id.nametext);
         name = getIntent().getStringExtra("name");
-        editName = findViewById(R.id.partName);
         editName.setText(name);
-        price = getIntent().getDoubleExtra("price", -1.0);
-        editPrice = findViewById(R.id.partPrice);
-        editPrice.setText(Double.toString(price));
-        partID = getIntent().getIntExtra("id", -1);
-        prodID = getIntent().getIntExtra("prodID", -1);
-        editNote = findViewById(R.id.partName);
+        excursionID = getIntent().getIntExtra("id", -1);
+        vacationID = getIntent().getIntExtra("vacid", -1);
+        excursionDate = getIntent().getStringExtra("ExcursionDate");
         editDate = findViewById(R.id.date);
+        editDate.setText(excursionDate);
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
@@ -96,9 +97,9 @@ public class ExcursionDetails extends AppCompatActivity {
             }
         };
         Spinner spinner = findViewById(R.id.spinner);
-        ArrayList<Vacation> productArrayList=new ArrayList<>();
+        ArrayList<Vacation> productArrayList = new ArrayList<>();
         productArrayList.addAll(repository.getmAllVacations());
-        ArrayAdapter<Vacation>productAdapter=new ArrayAdapter<>(this,android.R.layout.simple_spinner_item, productArrayList);
+        ArrayAdapter<Vacation> productAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, productArrayList);
         spinner.setAdapter(productAdapter);
         spinner.setSelection(0);
 
@@ -137,7 +138,6 @@ public class ExcursionDetails extends AppCompatActivity {
     }
 
 
-
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
@@ -147,16 +147,16 @@ public class ExcursionDetails extends AppCompatActivity {
 
         if (item.getItemId() == R.id.partsave) {
             Excursion part;
-            if (partID == -1) {
+            if (excursionID == -1) {
                 if (repository.getAllParts().size() == 0)
-                    partID = 1;
+                    excursionID = 1;
                 else
-                    partID = repository.getAllParts().get(repository.getAllParts().size() - 1).getExcursionID() + 1;
-                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID, editDate.getText().toString());
+                    excursionID = repository.getAllParts().get(repository.getAllParts().size() - 1).getExcursionID() + 1;
+                part = new Excursion(excursionID, editName.getText().toString(), excursionID, editDate.getText().toString());
                 repository.insert(part);
                 this.finish();
             } else {
-                part = new Excursion(partID, editName.getText().toString(), Double.parseDouble(editPrice.getText().toString()), prodID, editDate.getText().toString());
+                part = new Excursion(excursionID, editName.getText().toString(), excursionID, editDate.getText().toString());
                 repository.update(part);
                 this.finish();
             }
@@ -186,16 +186,23 @@ public class ExcursionDetails extends AppCompatActivity {
             try {
                 Long trigger = myDate.getTime();
                 Intent intent = new Intent(ExcursionDetails.this, MyReceiver.class);
-                intent.putExtra("key","message I want to see");
-                PendingIntent sender=PendingIntent.getBroadcast(ExcursionDetails.this,++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+                intent.putExtra("key", "message I want to see");
+                PendingIntent sender = PendingIntent.getBroadcast(ExcursionDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                alarmManager.set(AlarmManager.RTC_WAKEUP, trigger,sender); }
-            catch (Exception e) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+            } catch (Exception e) {
 
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateLabelStart();
     }
 }
 
