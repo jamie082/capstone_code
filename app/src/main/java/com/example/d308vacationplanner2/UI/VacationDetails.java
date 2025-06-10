@@ -40,6 +40,8 @@ public class VacationDetails extends AppCompatActivity {
     String hotel;
     double price;
     int productID;
+
+    int vacationID;
     EditText editName;
     EditText editPrice;
 
@@ -274,10 +276,8 @@ public class VacationDetails extends AppCompatActivity {
         if (item.getItemId() == R.id.share) {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "These are the vacation details: vacationID: " +
-                    (currentVacation != null ? currentVacation.getVacationID() : "") +
-                    ", the name of our vacation: " + editName.getText().toString() +
-                    ", price: $" + Double.parseDouble(editPrice.getText().toString()) +
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "These are the vacation details, vacation name: " +
+                   editName.getText().toString() +
                     ", this is our start date: " + editStartVacaDate.getText().toString() +
                     ", this is our end date: " + editEndVacaDate.getText().toString() +
                     ", associated excursions: " + excursionDetails + " Let us know what you think!");

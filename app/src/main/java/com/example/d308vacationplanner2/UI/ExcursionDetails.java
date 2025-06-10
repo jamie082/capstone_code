@@ -14,6 +14,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +41,8 @@ public class ExcursionDetails extends AppCompatActivity {
     String excursionDate;
 
     int vacationID;
+
+    Excursion currentExcursion;
     Double price;
     int excursionID;
     EditText editName;
@@ -163,16 +166,16 @@ public class ExcursionDetails extends AppCompatActivity {
             return true;
         }
 
-        if (item.getItemId() == R.id.share) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, editNote.getText().toString() + "EXTRA_TEXT");
-            sendIntent.putExtra(Intent.EXTRA_TITLE, editNote.getText().toString() + "EXTRA_TITLE");
-            sendIntent.setType("text/plain");
-            Intent shareIntent = Intent.createChooser(sendIntent, null);
-            startActivity(shareIntent);
-            return true;
+        //if the user selects the menu option Delete Excursion...
+        if (item.getItemId() == R.id.excursiondelete) {
+            for (Excursion excursion : repository.getAllParts()) {
+                if (excursion.getExcursionID() == excursionID) currentExcursion = excursion;
+            }
+            repository.delete(currentExcursion);
+            Toast.makeText(ExcursionDetails.this, currentExcursion.getExcursionName() + " was deleted", Toast.LENGTH_LONG).show();
+            ExcursionDetails.this.finish();
         }
+
         if (item.getItemId() == R.id.notify) {
             String dateFromScreen = editDate.getText().toString();
             String myFormat = "MM/dd/yy"; // In which you need to put here
