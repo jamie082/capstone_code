@@ -41,6 +41,7 @@ public class VacationDetails extends AppCompatActivity {
     double price;
     int productID;
 
+    int numExcursions;
     int vacationID;
     EditText editName;
     EditText editPrice;
@@ -254,6 +255,25 @@ public class VacationDetails extends AppCompatActivity {
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
+            }
+        }
+        if (item.getItemId() == R.id.vacationdelete) {
+            for (Vacation vac : repository.getmAllVacations()) {
+                if (vac.getVacationID() == vacationID) currentVacation = vac;
+            }
+            numExcursions = 0;
+            for (Excursion excursion : repository.getAllParts()) {
+                if (excursion.getExcursionID() == productID) {
+                    ++numExcursions;
+                }
+            }
+            //if the vacation has any associated excursions, prevent deletion of the vacation, otherwise delete it
+            if (numExcursions == 0) {
+                repository.delete(currentVacation);
+                Toast.makeText(VacationDetails.this, currentVacation.getVacationName() + " was deleted", Toast.LENGTH_LONG).show();
+                VacationDetails.this.finish();
+            } else {
+                Toast.makeText(VacationDetails.this, "Can't delete a vacation with excursions", Toast.LENGTH_LONG).show();
             }
         }
 

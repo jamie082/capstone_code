@@ -4,6 +4,8 @@
 
     <item android:title="Save Vacation"
         android:id="@+id/partsave"/>
+    <item android:title="Delete Vacation"
+        android:id="@+id/vacationdelete"/>
     <item android:title="Share Note"
         android:orderInCategory="100"
         android:id="@+id/share"/>
