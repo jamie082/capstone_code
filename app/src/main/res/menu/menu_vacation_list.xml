@@ -6,4 +6,13 @@
         android:id="@+id/mysample" />
     <item android:title="Item"
         android:id="@+id/item" />
+    <!--
+    <item
+        android:id="@id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Search"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+        -->
+
 </menu>

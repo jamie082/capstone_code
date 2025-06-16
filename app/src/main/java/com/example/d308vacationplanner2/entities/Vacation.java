@@ -79,5 +79,4 @@ public class Vacation {
     public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
-
 }
