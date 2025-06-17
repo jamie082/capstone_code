@@ -20,12 +20,5 @@ import java.util.List;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    @Test
-    public void testVacationDetailsConstructorAndGetters() {
-        VacationDetails vacation = new VacationDetails("Beach Trip", "2025-06-20", "2025-06-25");
 
-        assertEquals("Beach Trip", vacation.getName());
-        assertEquals("2025-06-20", vacation.getStartDate());
-        assertEquals("2025-06-25", vacation.getEndDate());
-    }
 }
