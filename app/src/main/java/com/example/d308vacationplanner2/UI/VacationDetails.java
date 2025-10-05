@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import java.time.LocalDate;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -286,7 +287,7 @@ public class VacationDetails extends AppCompatActivity {
             excursionDetails.append("Excursion Name: ")
                     .append(p.getExcursionName())
 
-                   // .append(", Price: $")
+                    // .append(", Price: $")
                     //.append(p.getPrice())
 
 
@@ -297,7 +298,7 @@ public class VacationDetails extends AppCompatActivity {
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT, "These are the vacation details, vacation name: " +
-                   editName.getText().toString() +
+                    editName.getText().toString() +
                     ", this is our start date: " + editStartVacaDate.getText().toString() +
                     ", this is our end date: " + editEndVacaDate.getText().toString() +
                     ", associated excursions: " + excursionDetails + " Let us know what you think!");
@@ -306,6 +307,7 @@ public class VacationDetails extends AppCompatActivity {
             startActivity(shareIntent);
             return true;
         }
+
 
         if (item.getItemId() == R.id.notify) {
             String startdate = editStartVacaDate.getText().toString();
